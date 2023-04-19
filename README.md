@@ -1,27 +1,29 @@
 # SupersetUiAngular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.0.
+## Python Setup
 
-## Development server
+- to enable cors in python please install `pip3 install apache-superset[cors]` or `pip install apache-superset[cors]` (depending on python@2 or python@3 version you have on your computer)
+- in `.superset-config.py` file add props to configure CORS (origins can have `*` also) : 
+  - `ENABLE_CORS = True`
+  - `CORS_OPTIONS = {
+    'supports_credentials': True,
+    'allow_headers': ['*'],
+    'resources': ['*'],
+    'origins': ['http://localhost:4200', 'http://localhost:8088']
+    }`
+- IMPORTANT! To be able to embed dashboard via iframe set `FEATURE_FLAGS = {"EMBEDDED_SUPERSET": True }` in `.superset-config.py`
+- `GUEST_ROLE_NAME = "Gamma" SESSION_COOKIE_SAMESITE = None
+  ENABLE_PROXY_FIX = True PUBLIC_ROLE_LIKE_GAMMA = True` properties are responsible for granting access for guest user to be able to interact with dashboard
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Embedding details
 
-## Code scaffolding
+[Embedding dashboard to app (medium)](https://medium.com/@khushbu.adav/embedding-superset-dashboards-in-your-react-application-7f282e3dbd88)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Additional configs in Angular
 
-## Build
+- I used `proxy.conf.json` file as I had CORS issues accessing Dashboard API from Angular App
+- I added `X-CSRF-Token` header and `csrf-token` API call as it is required to get `guest-token` (This is not described in medium article, fount this in [Swagger](http://localhost:8088/swagger/v1))
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Superset start
+- `docker-compose -f docker-compose-non-dev.yml up --build`
+- username: `admin`, password: `admin`
